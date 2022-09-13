@@ -26,7 +26,8 @@
         phi = 0, theta = 0;
 
     // TODO: Create a texture array to store all images in the 'textures' directory
-    let textures = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
+    // let textures = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
+    let textures = new THREE.TextureLoader().load('https://commons.wikimedia.org/wiki/File:Harderwijk_harbour_2018_-_360_panorama.jpg');
 
     init();
     animate();
@@ -193,14 +194,13 @@
             </crowd-radio-group>
         </section>
     
-        <section class="jumbotron text-center">
+        <section class="jumbotron text-center align-items-center">
             <p class="lead"> On a scale of 1-7, how well does the scenario represent this Category?</p>
-            <p class="lead text-muted"> [1 = Bad representation, 7 = Good representation] </p>
+            <p class="lead text-muted"> Move the slider to rate the scenario [1 = Bad representation, 7 = Good representation] </p>
             <!-- How well does the scenario fit the chosen category? 
             Please rate the exemplar according to the category you chose on a scale of 1 to 7, where 1 indicates that the scenario is a bad representation of the chosen category and 7 indicates that the scenario is a good representation of the chosen category. -->
             
-            <!-- TODO: align slider to the center -->
-            <div class="">
+            <div style="display: inline-block;">
                 <crowd-slider name="rating" min="1" max="7" step="1" value="4" pin="true" required></crowd-slider>
             </div>
         </section>        

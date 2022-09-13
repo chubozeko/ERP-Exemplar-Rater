@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="ERP Experiment - Exemplar Rating Questionnaire">
+    <meta name="robots" content="noindex, nofollow">
+    <!-- <link rel="icon" href="images/_.ico"> -->
+    <title>ERP Experiment Questionnaire</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+    <!-- Custom styles for this template -->    
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://use.fontawesome.com/e0b96e820f.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+          <a href="index.html" class="navbar-brand d-flex align-items-center">
+            <img src="images/ubicomp_logo.png" width="36dp" height="36dp" /> &nbsp; &nbsp;
+            <strong>Exemplar Rating Questionnaire</strong>
+          </a>
+        </div>
+      </div>
+    </header>
+    <main role="main">
+      <section class="jumbotron text-center">
+        <div class="container">
+            <img src="images/unioulu_logo.jpg" height="220dp" />
+            <img src="images/ubicomp_logo.png" height="220dp" width="220dp" /> <br/><br/>
+            <h3 class="jumbotron-heading2">Exemplar Rating Questionnaire</h3>
+            <p class="lead text-muted unioulu_dblue">
+                This questionnaire was designed to see how well a given virtual environment resembles a real environment by asking the user to rate the exemplar according to the category it is assigned to.
+            </p>
+        </div>
+      </section>
+      <section class="jumbotron text-center">
+		<h4 class="jumbotron-heading2 text-center">Exemplar</h4>
+		<p class="lead text-muted unioulu_dblue">
+			Click the button below to view the virtual scenario
+		</p>
+		<button type="button" class="btn unioulu_lblue_btn" id="btn-view-ex">View Exemplar</button>
+		<br/> <br/>
+        <div id="container" style="display: none;"></div>
+      </section>
+      <section class="jumbotron text-center" id="category-options" style="display: none;">
+        <div class="container">
+            <h4 class="jumbotron-heading2 text-center">Category</h4>
+            <p class="lead text-muted unioulu_dblue">
+                Select the category which best suits the scenario:
+            </p>
+			<div>
+				<input type="radio" class="btn-check" name="category-opts" id="co-beach" autocomplete="off" checked>
+				<label class="btn unioulu_lblue_btn" for="co-beach">Beach</label>
+			</div>
+			<div>
+				<input type="radio" class="btn-check" name="category-opts" id="co-citystreet" autocomplete="off">
+            	<label class="btn unioulu_lblue_btn" for="co-citystreet">City Street</label>
+			</div>
+			<div>
+				<input type="radio" class="btn-check" name="category-opts" id="co-forest" autocomplete="off">
+            	<label class="btn unioulu_lblue_btn" for="co-forest">Forest</label>
+			</div>
+			<div>
+				<input type="radio" class="btn-check" name="category-opts" id="co-highway" autocomplete="off">
+            	<label class="btn unioulu_lblue_btn" for="co-highway">Highway</label>
+			</div>
+			<div>
+				<input type="radio" class="btn-check" name="category-opts" id="co-office" autocomplete="off">
+            <label class="btn unioulu_lblue_btn" for="co-office">Office</label>
+			</div>
+			<div>
+				<input type="radio" class="btn-check" name="category-opts" id="co-mountain" autocomplete="off">
+            	<label class="btn unioulu_lblue_btn" for="co-mountain">Mountain</label>
+			</div>
+        </div>
+
+      </section>
+      <br/>
+      <section class="jumbotron text-center" id="ratings" style="display: none;">
+        <div class="container">
+          <h4 class="jumbotron-heading2">Rating</h4>
+          <p class="lead text-muted">
+            How well does the scenario fit this Category?
+          </p>
+          1-7
+        </div>
+      </section>
+      <br/>
+	  <section class="jumbotron text-center" id="submission" style="display: block;">
+        <div class="container">
+			<button type="submit" class="btn unioulu_lblue_btn" id="btn-submit">Submit and Continue</button>
+        </div>
+      </section>
+    </main>
+    <footer class="text-muted">
+      <div class="container">
+        <br><small> © 2022. UBICOMP</small>
+      </div>
+    </footer>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+			import * as THREE from 'three';
+
+			let camera, scene, renderer;
+
+			let isUserInteracting = false,
+				onPointerDownMouseX = 0, onPointerDownMouseY = 0,
+				lon = 0, onPointerDownLon = 0,
+				lat = 0, onPointerDownLat = 0,
+				phi = 0, theta = 0;
+
+			// TODO: Create a texture array to store all images in the 'textures' directory
+			let textures = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
+
+			init();
+			animate();
+
+			function init() {
+				const container = document.getElementById( 'container' );
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
+				scene = new THREE.Scene();
+
+				const geometry = new THREE.SphereGeometry( 500, 60, 40 );
+				// invert the geometry on the x-axis so that all of the faces point inward
+				geometry.scale( - 1, 1, 1 );
+
+				const texture = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
+				const material = new THREE.MeshBasicMaterial( { map: texture } );
+				const mesh = new THREE.Mesh( geometry, material );
+
+				scene.add( mesh );
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+				container.style.touchAction = 'none';
+				container.addEventListener( 'pointerdown', onPointerDown );
+
+				// document.addEventListener( 'wheel', onDocumentMouseWheel );
+				
+                document.addEventListener( 'dragover', function ( event ) {
+					event.preventDefault();
+					event.dataTransfer.dropEffect = 'copy';
+				});
+				
+                document.addEventListener( 'dragenter', function () {
+					document.body.style.opacity = 0.5;
+				});
+
+				document.addEventListener( 'dragleave', function () {
+					document.body.style.opacity = 1;
+				});
+
+				document.addEventListener( 'drop', function ( event ) {
+					event.preventDefault();
+					const reader = new FileReader();
+					reader.addEventListener( 'load', function ( event ) {
+						material.map.image.src = event.target.result;
+						material.map.needsUpdate = true;
+					});
+					reader.readAsDataURL( event.dataTransfer.files[ 0 ] );
+					document.body.style.opacity = 1;
+				});
+				window.addEventListener( 'resize', onWindowResize );
+
+				window.addEventListener('onkeydown', (event) => {
+				console.log("Esc PRESSED!")
+				if (event.key === 'Escape') {
+					let el = document.fullscreenElement;
+					if (el != null) {
+						el.style.display = "none";
+					}
+				}
+			});
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function onPointerDown( event ) {
+				if ( event.isPrimary === false ) return;
+
+				isUserInteracting = true;
+				onPointerDownMouseX = event.clientX;
+				onPointerDownMouseY = event.clientY;
+				onPointerDownLon = lon;
+				onPointerDownLat = lat;
+				document.addEventListener( 'pointermove', onPointerMove );
+				document.addEventListener( 'pointerup', onPointerUp );
+			}
+
+			function onPointerMove( event ) {
+				if ( event.isPrimary === false ) return;
+
+				lon = ( onPointerDownMouseX - event.clientX ) * 0.1 + onPointerDownLon;
+				lat = ( event.clientY - onPointerDownMouseY ) * 0.1 + onPointerDownLat;
+			}
+
+			function onPointerUp() {
+				if ( event.isPrimary === false ) return;
+
+				isUserInteracting = false;
+				document.removeEventListener( 'pointermove', onPointerMove );
+				document.removeEventListener( 'pointerup', onPointerUp );
+			}
+
+			function onDocumentMouseWheel( event ) {
+				const fov = camera.fov + event.deltaY * 0.05;
+				camera.fov = THREE.MathUtils.clamp( fov, 10, 75 );
+				camera.updateProjectionMatrix();
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				update();
+			}
+
+			function update() {
+				if ( isUserInteracting === false ) {
+					lon += 0.1;
+				}
+
+				lat = Math.max( - 85, Math.min( 85, lat ) );
+				phi = THREE.MathUtils.degToRad( 90 - lat );
+				theta = THREE.MathUtils.degToRad( lon );
+
+				const x = 500 * Math.sin( phi ) * Math.cos( theta );
+				const y = 500 * Math.cos( phi );
+				const z = 500 * Math.sin( phi ) * Math.sin( theta );
+
+				camera.lookAt( x, y, z );
+				renderer.render( scene, camera );
+			}
+
+			document.getElementById("btn-view-ex").addEventListener('click', e => {
+				let exemplar = document.getElementById("container")
+				openFullscreen(exemplar);
+
+				if (exemplar.style.display == "none") {
+					exemplar.style.display = "block";
+					document.getElementById("category-options").style.display = "block";
+					document.getElementById("ratings").style.display = "block";
+				} else
+					exemplar.style.display = "none";
+			});
+
+			function openFullscreen(elem) {
+				if (elem.requestFullscreen) {
+					elem.requestFullscreen();
+				} else if (elem.webkitRequestFullscreen) { /* Safari */
+					elem.webkitRequestFullscreen();
+				} else if (elem.msRequestFullscreen) { /* IE11 */
+					elem.msRequestFullscreen();
+				}
+			}
+		</script>
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

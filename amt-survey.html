@@ -25,10 +25,6 @@
         lat = 0, onPointerDownLat = 0,
         phi = 0, theta = 0;
 
-    // TODO: Create a texture array to store all images in the 'textures' directory
-    // let textures = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
-    let textures = new THREE.TextureLoader().load('https://commons.wikimedia.org/wiki/File:Harderwijk_harbour_2018_-_360_panorama.jpg');
-
     init();
     animate();
 
@@ -41,7 +37,9 @@
         // invert the geometry on the x-axis so that all of the faces point inward
         geometry.scale( - 1, 1, 1 );
 
-        const texture = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
+        // const texture = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
+        let exemplar_url = document.getElementById("exemplar_url").innerHTML
+        const texture = new THREE.TextureLoader().load( exemplar_url );
         const material = new THREE.MeshBasicMaterial( { map: texture } );
         const mesh = new THREE.Mesh( geometry, material );
 
@@ -82,14 +80,14 @@
         window.addEventListener( 'resize', onWindowResize );
 
         window.addEventListener('onkeydown', (event) => {
-        console.log("Esc PRESSED!")
-        if (event.key === 'Escape') {
-            let el = document.fullscreenElement;
-            if (el != null) {
-                el.style.display = "none";
+            console.log("Esc PRESSED!")
+            if (event.key === 'Escape') {
+                let el = document.fullscreenElement;
+                if (el != null) {
+                    el.style.display = "none";
+                }
             }
-        }
-    });
+        });
     }
 
     function onWindowResize() {
@@ -153,18 +151,57 @@
         renderer.render( scene, camera );
     }
 
+    // View Exemplar Scene & Category section
     document.getElementById("btn-view-ex").addEventListener('click', e => {
         let exemplar = document.getElementById("container")
-        openFullscreen(exemplar);
+        // openFullscreen(exemplar);
 
         if (exemplar.style.display == "none") {
             exemplar.style.display = "block";
-            document.getElementById("category-options").style.display = "block";
-            document.getElementById("ratings").style.display = "block";
-        } else
+            document.getElementById("section_category").style.display = "block";
+        } else {
             exemplar.style.display = "none";
+            document.getElementById("section_category").style.display = "none";
+        }
     });
 
+    function viewRatingSection() {
+        // Response Time for Category
+        document.getElementById("response_time_category").value = getCurrentTimeAndDate();
+
+        if (!document.getElementById("c_none").checked) {
+            if (document.getElementById("section_rating").style.display == "none") {
+                document.getElementById("section_rating").style.display = "block";
+            }
+            document.getElementById("btn_submit").style.display = "none";
+            document.getElementById("rating").value = -1;
+        } else {
+            document.getElementById("section_rating").style.display = "none";
+            viewSubmitButton();
+        }
+    };
+
+    document.getElementById("c_beach").addEventListener('change', viewRatingSection);
+    document.getElementById("c_citystreet").addEventListener('change', viewRatingSection);
+    document.getElementById("c_forest").addEventListener('change', viewRatingSection);
+    document.getElementById("c_none").addEventListener('change', viewRatingSection);
+    document.getElementById("rating").addEventListener('change', viewSubmitButton);
+
+    function ratingChanged() {
+        viewSubmitButton();
+    }
+    // View Submit button
+    function viewSubmitButton() {
+        // Response Time for Rating
+        document.getElementById("response_time_rating").value = getCurrentTimeAndDate();
+
+        if (document.getElementById("btn_submit").style.display == "none")
+            document.getElementById("btn_submit").style.display = "block";
+    };
+
+    function getCurrentTimeAndDate() {
+        return new Date().toLocaleString();
+    }
     function openFullscreen(elem) {
         if (elem.requestFullscreen) {
             elem.requestFullscreen();
@@ -178,31 +215,56 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
 
-<div id="container" style="display: block;"></div>
 <section class="jumbotron text-center">
-    <crowd-form onsubmit="">
-        <section class="jumbotron text-center">
+    <button type="button" class="btn unioulu_lblue_btn" id="btn-view-ex">Click Here to View Scene</button> <br/>
+</section>
+<div id="container" style="display: none;"></div>
+
+<section class="jumbotron text-center">
+    <crowd-form>
+        <section id="section_category" class="jumbotron text-center" style="display: none;">
             <p class="lead unioulu_dblue"> Select the category which best suits the scenario: </p>
             <!-- Which category best fits the given scenario? Select the category that best fits the given virtual environment. -->
-            <crowd-radio-group name="category" required>
-                <crowd-radio-button name="c_beach" value="Beach">Beach</crowd-radio-button>
-                <crowd-radio-button name="c_citystreet" value="City Street">City Street</crowd-radio-button>
-                <crowd-radio-button name="c_forest" value="Forest">Forest</crowd-radio-button>
-                <crowd-radio-button name="c_highway" value="Highway">Highway</crowd-radio-button>
-                <crowd-radio-button name="c_office" value="Office">Office</crowd-radio-button>
-                <crowd-radio-button name="c_mountain" value="Mountain">Mountain</crowd-radio-button>
+            <crowd-radio-group name="category" required >
+                <div>
+                    <input type="radio" class="btn-check" name="category" id="c_beach" value="Beach" />
+                    <label for="c_beach">Beach</label>
+                </div>
+                <div>
+                    <input type="radio" class="btn-check" name="category" id="c_citystreet" value="City Street" />
+                    <label for="c_citystreet">City Street</label>
+                </div>
+                <div>
+                    <input type="radio" class="btn-check" name="category" id="c_forest" value="Forest" />
+                    <label for="c_forest">Forest</label>
+                </div>
+                <div>
+                    <input type="radio" class="btn-check" name="category" id="c_none" value="None" />
+                    <label for="c_none">None of the Above</label>
+                </div>
             </crowd-radio-group>
         </section>
     
-        <section class="jumbotron text-center align-items-center">
-            <p class="lead"> On a scale of 1-7, how well does the scenario represent this Category?</p>
+        <section id="section_rating" class="jumbotron text-center align-items-center" style="display: none;">
+            <!-- TODO: change wording -->
+            <p class="lead"> On a scale of 1-7, how well does this represent a ${exemplar_type}?</p>
             <p class="lead text-muted"> Move the slider to rate the scenario [1 = Bad representation, 7 = Good representation] </p>
             <!-- How well does the scenario fit the chosen category? 
             Please rate the exemplar according to the category you chose on a scale of 1 to 7, where 1 indicates that the scenario is a bad representation of the chosen category and 7 indicates that the scenario is a good representation of the chosen category. -->
             
             <div style="display: inline-block;">
-                <crowd-slider name="rating" min="1" max="7" step="1" value="4" pin="true" required></crowd-slider>
+                <crowd-slider id="rating" name="rating" min="1" max="7" step="1" value="-1" pin="true" required></crowd-slider>
             </div>
-        </section>        
+        </section>
+
+        <crowd-button id="btn_submit" style="display: none;" form-action="submit"> Submit Answers </crowd-button>
+
+        <div style="display: none;">
+            <div id="exemplar_name">${exemplar_name}</div>
+            <div id="exemplar_url">${image_url}</div>
+            <crowd-input id="exemplar_id" name="exemplar_id" label="Exemplar ID" value="${exemplar_id}"></crowd-input>
+            <crowd-input id="response_time_category" name="response_time_category" label="Response Time for Category" value=""></crowd-input>
+            <crowd-input id="response_time_rating" name="response_time_rating" label="Response Time for Rating" value=""></crowd-input>
+        </div>
     </crowd-form>
 </section>

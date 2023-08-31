@@ -37,8 +37,9 @@
         // invert the geometry on the x-axis so that all of the faces point inward
         geometry.scale( - 1, 1, 1 );
 
-        // const texture = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
+        // 'exemplar_url' is used to load the 360 image with three.js based on a url. It is retrieved from the external .csv file containing the exemplar data.
         let exemplar_url = document.getElementById("exemplar_url").innerHTML
+        // const texture = new THREE.TextureLoader().load( 'textures/beach_1.jpeg' );
         const texture = new THREE.TextureLoader().load( exemplar_url );
         const material = new THREE.MeshBasicMaterial( { map: texture } );
         const mesh = new THREE.Mesh( geometry, material );
@@ -166,7 +167,7 @@
     });
 
     function viewRatingSection() {
-        // Response Time for Category
+        // Get the Response Time for Category and store it in the 'response_time_category' element
         document.getElementById("response_time_category").value = getCurrentTimeAndDate();
 
         if (!document.getElementById("c_none").checked) {
@@ -192,7 +193,7 @@
     }
     // View Submit button
     function viewSubmitButton() {
-        // Response Time for Rating
+        // Get the Response Time for Rating and store it in the 'response_time_rating' element
         document.getElementById("response_time_rating").value = getCurrentTimeAndDate();
 
         if (document.getElementById("btn_submit").style.display == "none")
@@ -227,26 +228,26 @@
             <!-- Which category best fits the given scenario? Select the category that best fits the given virtual environment. -->
             <crowd-radio-group name="category" required >
                 <div>
-                    <input type="radio" class="btn-check" name="category" id="c_beach" value="Beach" />
+                    <input type="radio" class="btn-check" name="category" id="c_beach" value="beach" />
                     <label for="c_beach">Beach</label>
                 </div>
                 <div>
-                    <input type="radio" class="btn-check" name="category" id="c_citystreet" value="City Street" />
+                    <input type="radio" class="btn-check" name="category" id="c_citystreet" value="city_street" />
                     <label for="c_citystreet">City Street</label>
                 </div>
                 <div>
-                    <input type="radio" class="btn-check" name="category" id="c_forest" value="Forest" />
+                    <input type="radio" class="btn-check" name="category" id="c_forest" value="forest" />
                     <label for="c_forest">Forest</label>
                 </div>
                 <div>
-                    <input type="radio" class="btn-check" name="category" id="c_none" value="None" />
+                    <input type="radio" class="btn-check" name="category" id="c_none" value="none" />
                     <label for="c_none">None of the Above</label>
                 </div>
             </crowd-radio-group>
         </section>
     
         <section id="section_rating" class="jumbotron text-center align-items-center" style="display: none;">
-            <!-- TODO: change wording -->
+            <!-- TODO: rephrase question -->
             <p class="lead"> On a scale of 1-7, how well does this represent a ${exemplar_type}?</p>
             <p class="lead text-muted"> Move the slider to rate the scenario [1 = Bad representation, 7 = Good representation] </p>
             <!-- How well does the scenario fit the chosen category? 
@@ -259,6 +260,9 @@
 
         <crowd-button id="btn_submit" style="display: none;" form-action="submit"> Submit Answers </crowd-button>
 
+        <!-- The following code block is where the current exemplar data is stored.
+             ${exemplar_name} and ${image_url} are loaded from the .csv file which is uploaded to MTurk (e.g. exemplar_batch_test.csv) 
+        -->
         <div style="display: none;">
             <div id="exemplar_name">${exemplar_name}</div>
             <div id="exemplar_url">${image_url}</div>
